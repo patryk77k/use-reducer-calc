@@ -49,6 +49,22 @@ const reducer = (state, { type, payload }) => {
         operation: payload.operation,
         currentOperand: null,
       };
+    case ACTIONS.EVALUATE: {
+      if (
+        state.previousOperand == null ||
+        state.currentOperand == null ||
+        state.operation == null
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        previousOperand: null,
+        currentOperand: evaluate(state),
+
+        operation: null,
+      };
+    }
 
     case ACTIONS.CLEAR:
       return {};
@@ -82,9 +98,9 @@ function App() {
     reducer,
     {}
   );
-  // console.log("P", previousOperand);
-  // console.log("C", currentOperand);
-  // console.log("Op", operation);
+  console.log("P", previousOperand);
+  console.log("C", currentOperand);
+  console.log("Op", operation);
   return (
     <div className="calculator-grid">
       <div className="output">
@@ -114,7 +130,16 @@ function App() {
       <OperationButton operation="-" dispatch={dispatch} />
       <DigitButton digit="." dispatch={dispatch} />
       <DigitButton digit="0" dispatch={dispatch} />
-      <button className="span-two">=</button>
+      <button
+        className="span-two"
+        onClick={() =>
+          dispatch({
+            type: ACTIONS.EVALUATE,
+            payload: { currentOperand, previousOperand, operation },
+          })
+        }>
+        =
+      </button>
     </div>
   );
 }
